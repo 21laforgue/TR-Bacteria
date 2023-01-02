@@ -1,0 +1,152 @@
+<html>
+  <head>
+    <title>Bacteria Genome App</title>
+    <!-- Add styles for the UI -->
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      .container {
+        display: flex;
+      }
+      #files {
+        flex: 1;
+      }
+      #controls {
+        flex: 0;
+      }
+      #graph-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 400px;
+        background-color: #eee;
+      }
+      #comments {
+        border-top: 1px solid #ccc;
+        padding: 16px;
+      }
+      #comments form {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      #comments textarea {
+        flex: 1;
+        margin-right: 16px;
+      }
+      #comments input[type="text"] {
+        width: 200px;
+      }
+      #comments button {
+        margin-top: 16px;
+      }
+      /* Add styles for pastel colors */
+      #files {
+        background-color: #fcfbeb;
+      }
+      #controls {
+        background-color: #e8f5e9;
+      }
+      #comments {
+        background-color: #e3f2fd;
+      }
+    </style>
+    <!-- Add icons for the UI -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container">
+      <div id="files">
+        <h2>Files</h2>
+        <!-- Add a list or table component for displaying the files -->
+        <ul id="file-list"></ul>
+        <!-- Add a form for filtering and categorizing the files -->
+        <form id="file-filter">
+          <input type="text" placeholder="Filter by name or category">
+          <select>
+            <option value="">All categories</option>
+            <!-- Add options for the categories -->
+            <option value="category1">Category 1</option>
+            <option value="category2">Category 2</option>
+          </select>
+          <button type="submit"><i class="fas fa-search"></i> Filter</button>
+        </form>
+      </div>
+      <div id="controls">
+        <h2>Controls</h2>
+        <!-- Add a button for opening files -->
+        <button id="open-file-button"><i class="fas fa-folder-open"></i> Open File</button>
+        <div id="file-data"></div>
+        <script src="app.js"></script>
+        <!-- Add a button for comparing the selected files -->
+        <button id="compare-button"><i class="fas fa-exchange-alt"></i> Compare</button>
+      </div>
+    </div>
+    <!-- Add a container for the graph -->
+    <div id="graph-container">
+      <!-- Add a placeholder for the graph -->
+      <p>Select two files to compare</p>
+    </div>
+    <!-- Add a container for the comments -->
+    <div id="comments">
+      <h2>Comments</h2>
+      <!-- Add a form for entering and saving comments -->
+      <form id="comment-form">
+        <textarea placeholder="Enter your comment"></textarea>
+        <input type="text" placeholder="Enter your name">
+        <button type="submit"><i class="fas fa-save"></i> Save</button>
+      </form>
+      <!-- Add a list or table component for displaying the comments -->
+      <ul id="comment-list"></ul>
+    </div>
+    <!-- Add a script for handling UI events and communicating with the main process -->
+    <script>
+      const { ipcRenderer } = require('electron');
+      // Add code to handle the "click" event for the open file button
+      document.getElementById('open-file-button').addEventListener('click', () => {
+        // Send the "open-file" event to the main process
+        ipcRenderer.send('open-file');
+      });
+      // Add code to handle the "click" event for the compare button
+      document.getElementById('compare-button').addEventListener('click', () => {
+        // Send the "compare-files" event to the main process
+        ipcRenderer.send('compare-files');
+      });
+      // Add code to handle the "file-data" event
+      ipcRenderer.on('file-data', (event, fileData) => {
+        // Add code to display the file data in the file list
+        const fileList = document.getElementById('file-list');
+        // Create a new list item or table row for the file
+        const fileItem = document.createElement('li'); // or 'tr' for a table
+        fileItem.innerHTML = fileData;
+        // Add the file item to the file list
+        fileList.appendChild(fileItem);
+      });
+      // Add code to handle the "graph-data" event
+      ipcRenderer.on('graph-data', (event, graphData) => {
+        // Use the graph data to generate and display the graph
+        // Add code here to generate the graph and display it in a canvas or SVG element
+      });
+      // Add code to handle the "comment-data" event
+      ipcRenderer.on('comment-data', (event, commentData) => {
+        // Add code to display the comment data in the comment list
+        const commentList = document.getElementById('comment-list');
+        // Create a new list item or table row for the comment
+        const commentItem = document.createElement('li'); // or 'tr' for a table
+        commentItem.innerHTML = commentData;
+        // Add the comment item to the comment list
+        commentList.appendChild(commentItem);
+      });
+      // Add code to handle the "submit" event for the comment form
+      document.getElementById('comment-form').addEventListener('submit', (event) => {
+        // Prevent the form from submitting
+        event.preventDefault();
+        // Get the comment and name from the form
+        const comment = event.target.elements['comment'].value;
+        const name = event.target.elements['name'].value;
+        // Send the "save-comment" event to the main process
+        ipcRenderer.send('save-comment', { comment, name });
+      });
+    </script>
+  </body>
+</html>
